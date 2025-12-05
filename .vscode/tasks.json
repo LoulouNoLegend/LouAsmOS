@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build & Run",
+            "type": "shell",
+            "command": "nasm -fbin \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}.bin\"; if ($?) { qemu-system-x86_64 -drive format=raw,file=\"${fileDirname}/${fileBasenameNoExtension}.bin\" }",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
