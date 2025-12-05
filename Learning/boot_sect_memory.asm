@@ -1,3 +1,5 @@
+; Source: https://github.com/cfenollosa/os-tutorial/
+
 mov ah, 0x0e
 
 ; attempt 1
