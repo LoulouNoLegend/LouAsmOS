@@ -1,4 +1,5 @@
 ;Source: https://medium.com/@notarioairlangga/how-to-set-up-visual-studio-code-vscode-for-x86-64-assembly-programming-on-windows-11-a-96f86a0db214
+
 default rel   ; Use RIP-relative addressing by default
 ; Data section
 section .data
