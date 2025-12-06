@@ -1,15 +1,26 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Build & Run",
-            "type": "shell",
-            "command": "nasm -fbin \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}.bin\"; if ($?) { qemu-system-x86_64 -drive format=raw,file=\"${fileDirname}/${fileBasenameNoExtension}.bin\" }",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build & Run (single file)",
+      "type": "shell",
+      "command": "nasm -fbin \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}.bin\"; if ($?) { qemu-system-x86_64 -drive format=raw,file=\"${fileDirname}/${fileBasenameNoExtension}.bin\" }",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build OS (boot + kernel) & Run",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "nasm -f bin \"${fileDirname}\\boot.asm\" -o \"${fileDirname}\\boot.bin\" && nasm -f bin \"${fileDirname}\\kernel.asm\" -o \"${fileDirname}\\kernel.bin\" && copy /b \"${fileDirname}\\boot.bin\"+\"${fileDirname}\\kernel.bin\" \"${fileDirname}\\laos.img\" && qemu-system-i386 -drive format=raw,file=\"${fileDirname}\\laos.img\""
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
 }

@@ -18,10 +18,11 @@ start:
     mov sp, 0x7C00  ; Set Stack Pointer to 0x7C00
     sti         ; Enable hardware interrupts again
 
-    call clear_scren    ; Push address on stack, so don't put before the stack setup
+    ; Remember the boot drive
+    mov [boot_drive], dl
 
 main_menu:    
-    call clear_scren
+    call clear_screen
 
     ; Reset cursor to top-left
     mov ah, 0x02
@@ -41,6 +42,10 @@ main_menu:
     call newline_tty
     mov si, msg_opt2
     call print_normal
+
+    call newline_tty
+    mov si, msg_opt3
+    call print_normal
     
     call newline_tty
     call newline_tty
@@ -50,16 +55,50 @@ main_menu:
     call read_key
 
     cmp al, '1'
-    je show_about
+    je launch_kernel
 
     cmp al, '2'
+    je show_about
+
+    cmp al, '3'
     je show_halt
     
     jmp main_menu
 
 ;---------------------------
+; Load kernel from disk into 0x1000:0000
+launch_kernel:
+    ; Set ES = 0x1000 (segment)
+    mov ax, 0x1000
+    mov es, ax
+    xor bx, bx          ; offset 0
+
+    ; Read 1 sector from CHS(0,0,2) -> LBA(1)
+    ; LBA 0 -> CHS(0,0,1) -> Boot.bin
+    ; LBA 1 -> CHS(0,0,2) -> Kernel.bin
+    mov ah, 0x02        ; BIOS: read sectors
+    mov al, 1           ; number of sectors to read = 1
+    mov ch, 0           ; cylinder 0
+    mov cl, 2           ; sector 2 (boot is sector 1)
+    mov dh, 0           ; head 0
+    mov dl, [boot_drive]
+    int 0x13
+
+    jc disk_error       ; if CF=1, error
+
+    ; If there's no error then jump to kernel (0x1000:0000)
+    jmp 0x1000:0x0000
+
+disk_error:
+    call clear_screen
+    mov si, msg_disk_err
+    mov bl, 0x0C
+    call print_color
+    jmp $
+
+;---------------------------
 show_about:
-    call clear_scren
+    call clear_screen
 
     mov si, msg_about
     call print_normal
@@ -69,12 +108,12 @@ show_about:
     mov si, msg_anykey
     call print_normal
 
-    ; wait and then go back to menu
+    ; wait for key and go back to menu
     call read_key
     jmp main_menu
 
 show_halt:
-    call clear_scren
+    call clear_screen
 
     mov si, msg_halt
     mov bl, 0x0A
@@ -84,7 +123,7 @@ show_halt:
 
 ;---------------------------
 newline_tty:
-    mov ah, 0x0E     ; teletype mode / reset AH
+    mov ah, 0x0E     ; tty mode / reset AH
     mov al, 0x0D
     int 0x10
     mov al, 0x0A
@@ -98,7 +137,7 @@ read_key:
     int 0x16        ; AH=scan code, AL=ASCII
     ret
 
-clear_scren:
+clear_screen:
     ; Text mode 80x25, clear screen
     mov ax, 0x0003  ; 00: VideoMode / 03: 80x25
     int 0x10
@@ -145,16 +184,19 @@ print_color:
 ;----------------------------
 
 msg_title  db "LAOS Micro-OS v0", 0
-msg_opt1   db "[1] About", 0
-msg_opt2   db "[2] Halt system", 0
+msg_opt1   db "[1] Launch Kernel", 0
+msg_opt2   db "[2] About", 0
+msg_opt3   db "[3] Halt system", 0
 msg_prompt db "Select option: ", 0
 
 msg_about  db "LAOS is a tiny bootloader OS experiment.", 0
 msg_anykey db "Press any key to return to menu.", 0
 
 msg_halt   db "System halted. You can turn off the machine now.", 0
+msg_disk_err db "Disk read error while loading kernel.", 0
 
 color_x db 0
+boot_drive   db 0
 
 ; Placing 510 zeros, minus the size of the code above
 ;   then boot signature / magic number (16-bit / 2 bytes)
