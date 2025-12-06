@@ -1,6 +1,6 @@
 [org 0x7c00] ; offset address (where the BIOS loads the boot sector)
 
-mov si, msg     ; SI = pointer to string
+mov si, msg     ; SI: 16-Bit register pointing to current position in the string
 mov ah, 0x0e    ; Enter tty mode (BIOS)
 
 .print_loop:
@@ -8,7 +8,7 @@ mov ah, 0x0e    ; Enter tty mode (BIOS)
 
     ; Compare the value in AL to 0
     ; If the value is the same, then finish the execution through done
-    cmp al, 0
+    cmp al, 0   ; AL: 8-bit register holding a character to print
     je done
     
     ; Write AL and continue the loop (if the print isn't done)
