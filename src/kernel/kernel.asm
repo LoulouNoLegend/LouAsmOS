@@ -30,8 +30,8 @@ kernel_start:
 
 ;---------------------------
 
-%include "functions.asm"
+%include "src/common/functions.asm"
 
 msg_is_running db "LAOS kernel is now running, but there's nothing here yet! x_x", 0
 
-times 512 - ($ - $$) db 0
+;times 512 - ($ - $$) db 0

@@ -2,10 +2,17 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Build & Run (single file)",
+      "label": "Build & Run (boot only)",
       "type": "shell",
-      "command": "nasm -fbin \"${file}\" -o \"${fileDirname}/${fileBasenameNoExtension}.bin\"; if ($?) { qemu-system-x86_64 -drive format=raw,file=\"${fileDirname}/${fileBasenameNoExtension}.bin\" }",
-      "group": "build",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "nasm -f bin \"${workspaceFolder}\\src\\boot\\boot.asm\" -o \"${workspaceFolder}\\build\\boot.bin\" && qemu-system-i386 -drive format=raw,file=\"${workspaceFolder}\\build\\boot.bin\""
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
       "problemMatcher": []
     },
     {
@@ -14,7 +21,7 @@
       "command": "cmd",
       "args": [
         "/c",
-        "nasm -f bin \"${fileDirname}\\boot.asm\" -o \"${fileDirname}\\boot.bin\" && nasm -f bin \"${fileDirname}\\kernel.asm\" -o \"${fileDirname}\\kernel.bin\" && copy /b \"${fileDirname}\\boot.bin\"+\"${fileDirname}\\kernel.bin\" \"${fileDirname}\\laos.img\" && qemu-system-i386 -drive format=raw,file=\"${fileDirname}\\laos.img\""
+        "nasm -f bin \"${workspaceFolder}\\src\\boot\\boot.asm\" -o \"${workspaceFolder}\\build\\boot.bin\" && nasm -f bin \"${workspaceFolder}\\src\\kernel\\kernel.asm\" -o \"${workspaceFolder}\\build\\kernel.bin\" && copy /b \"${workspaceFolder}\\build\\boot.bin\"+\"${workspaceFolder}\\build\\kernel.bin\" \"${workspaceFolder}\\build\\laos.img\" && qemu-system-i386 -drive format=raw,file=\"${workspaceFolder}\\build\\laos.img\""
       ],
       "group": {
         "kind": "build",

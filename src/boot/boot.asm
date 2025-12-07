@@ -122,7 +122,7 @@ show_halt:
     jmp $   ; freeze forever aaaa
 ;----------------------------
 
-%include "functions.asm"
+%include "src/common/functions.asm"
 
 msg_title  db "LAOS Micro-OS v0", 0
 msg_opt1   db "[1] Launch Kernel", 0
