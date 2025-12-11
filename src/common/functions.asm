@@ -55,7 +55,6 @@ done:
 cmp_str:
     push si
     push di
-    push ax
     push bx
 .cmp_loop:
     mov al, [si]    ; AL = char string 1
@@ -77,10 +76,10 @@ cmp_str:
 
 .not_equal:
     mov al, 0
+    jmp .end
 
 .end:
     pop bx
-    pop ax
     pop di
     pop si
     ret

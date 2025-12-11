@@ -62,7 +62,6 @@ read_line:
     push ax
     push si
     push cx
-    push dx
 
     mov si, cmd_buffer  ; SI = start cmd_buffer
     xor cx, cx  ; reset counter
@@ -94,14 +93,13 @@ read_line:
 
     call newline_tty
 
-    pop dx
     pop cx
     pop si
     pop ax
 
     ret
 
-.backspace
+.backspace:
     cmp cx, 0
     je .read_loop
 
@@ -119,8 +117,6 @@ read_line:
     int 0x10
     
     jmp .read_loop
-
-    ret
 
 ;---------------------
 ; Values
