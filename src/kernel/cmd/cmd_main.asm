@@ -40,8 +40,9 @@ cmd_loop:
 
 ; commands
 .do_clear:
-    call clear_screen
-    jmp cmd_loop
+    ;call clear_screen
+    ;jmp cmd_loop
+    jmp kernel_start    ; only for now, because it's not optimal at all.
 
 .do_help:
     mov si, msg_cmd_help
